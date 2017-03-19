@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 /// <summary>
 /// FreeMind(.mm) NodeBase
 /// </summary>
+[Serializable]
 public class FreeMindNode : NodeBase
 {
 
@@ -57,5 +59,6 @@ public class FreeMindNode : NodeBase
             m_text = value;
         }
     }
+
 }
 

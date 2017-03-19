@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[System.Serializable]
-public class FreeMindArrowLink : ArrowLinkBase
+public class FreeMindNodeScriptable : ScriptableObject
 {
-
+    public List<FreeMindNode> nodes;
 }

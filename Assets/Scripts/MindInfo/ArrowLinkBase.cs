@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public abstract class ArrowLinkBase : ScriptableObject, IMindReadable
+[System.Serializable]
+public abstract class ArrowLinkBase : IMindReadable
 {
 
     private string m_id;

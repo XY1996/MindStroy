@@ -7,7 +7,8 @@ using UnityEngine;
 /// <summary>
 /// This is a Nodebase Class for Mind Tools Info
 /// </summary>
-public abstract class NodeBase : ScriptableObject, IMindReadable
+[System.Serializable]
+public class NodeBase : IMindReadable
 {
     private string m_id;
 
