@@ -5,8 +5,15 @@ using System.Xml;
 
 public class FreeMindeReader : XmlReaderBase
 {
+    private Dictionary<string, FreeMindNode> id2Node = new Dictionary<string, FreeMindNode>();
 
-	public FreeMindeReader(string path) : base(path)
+    public Dictionary<string, FreeMindNode> Dic
+    {
+        get { return id2Node; }
+    }
+
+
+    public FreeMindeReader(string path) : base(path)
     {
 
     }
@@ -20,22 +27,26 @@ public class FreeMindeReader : XmlReaderBase
         FreeMindNode tempNode;
         foreach (XmlNode node in firstNodes)
         {
-            nodes.Add(XmlNode2FreeMindNode(node));
+            FreeMindNode listNode = XmlNode2FreeMindNode(node);
+            nodes.Add(listNode);
+            if (!Dic.ContainsKey(listNode.Id))
+                Dic.Add(listNode.Id, listNode);
         }        
         return nodes;
         //return nodes;
     }
 
-    private static FreeMindNode XmlNode2FreeMindNode(XmlNode node)
+    private FreeMindNode XmlNode2FreeMindNode(XmlNode node)
     {
         FreeMindNode tempNode = new FreeMindNode();
         tempNode.Id = node.Attributes["ID"].Value;
         tempNode.Text = node.Attributes["TEXT"].Value;
-        foreach(XmlNode arrowLink in node.SelectNodes("arrowlink "))
+        foreach(XmlNode arrowLink in node.SelectNodes("arrowlink"))
         {
             FreeMindArrowLink tempArrowLink = new FreeMindArrowLink();
             tempArrowLink.Id = arrowLink.Attributes["ID"].Value;
             tempArrowLink.DestinationId = arrowLink.Attributes["DESTINATION"].Value;
+            tempNode.Link.Add(tempArrowLink);
         }
 
         XmlNodeList Nodes;
@@ -43,7 +54,11 @@ public class FreeMindeReader : XmlReaderBase
         {
             foreach(XmlNode secondNode in Nodes)
             {
-                tempNode.Nodes.Add(XmlNode2FreeMindNode(secondNode));
+                FreeMindNode listNode = XmlNode2FreeMindNode(secondNode);
+                tempNode.Nodes.Add(listNode);
+                if (!Dic.ContainsKey(listNode.Id))
+                    Dic.Add(listNode.Id, listNode);
+                //tempNode.Nodes.Add(XmlNode2FreeMindNode(secondNode));
             }
         }
         return tempNode;

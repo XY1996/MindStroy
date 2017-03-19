@@ -10,15 +10,16 @@ using System;
 [Serializable]
 public class FreeMindNode : NodeBase
 {
-
+    [SerializeField]
     private string m_text;
-
+    [SerializeField]
     private long m_modified;
-
+    [SerializeField]
     private long m_created;
-
+    [SerializeField]
     private List<FreeMindArrowLink> m_link = new List<FreeMindArrowLink>();
 
+    [SerializeField]
     private List<FreeMindNode> m_node = new List<FreeMindNode>();
 
     public List<FreeMindArrowLink> Link

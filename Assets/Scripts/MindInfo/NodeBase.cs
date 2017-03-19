@@ -10,6 +10,7 @@ using UnityEngine;
 [System.Serializable]
 public class NodeBase : IMindReadable
 {
+    [SerializeField]
     private string m_id;
 
     /// <summary>

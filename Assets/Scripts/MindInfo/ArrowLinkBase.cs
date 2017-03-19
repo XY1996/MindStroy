@@ -6,9 +6,9 @@ using UnityEditor;
 [System.Serializable]
 public abstract class ArrowLinkBase : IMindReadable
 {
-
+    [SerializeField]
     private string m_id;
-
+    [SerializeField]
     private string m_destinationId;
 
     /// <summary>
