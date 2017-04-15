@@ -736,6 +736,7 @@ namespace Fungus.EditorUtils
         
         protected static void AddCommandCallback(object obj)
         {
+            //!\todo add command
             AddCommandOperation commandOperation = obj as AddCommandOperation;
             
             var block = commandOperation.block;
