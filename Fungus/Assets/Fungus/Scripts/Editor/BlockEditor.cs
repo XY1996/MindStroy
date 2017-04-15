@@ -646,6 +646,7 @@ namespace Fungus.EditorUtils
 
         protected virtual void ShowCommandMenu()
         {
+            //!\todo Modify!!
             var block = target as Block;
 
             var flowchart = (Flowchart)block.GetFlowchart();
