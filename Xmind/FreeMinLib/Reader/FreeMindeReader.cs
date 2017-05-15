@@ -63,13 +63,15 @@ public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
         {
             Id = new Guid().ToString(),
             Text = "开始",
+            ParentNode = null
         };
+
         Dictionary<string, FreeMindNode> allFreeMindNodes;
         List<FreeMindNode> dataList = SelectNodes(out allFreeMindNodes);
 
         foreach (var freeMindNode in dataList)
         {
-            result.LeftChildNode.Add(FreeMindNodeToTreeNode(freeMindNode, allFreeMindNodes));
+            result.LeftChildNode.Add(FreeMindNodeToTreeNode(result,freeMindNode, allFreeMindNodes));
         }
         return result;
 
@@ -135,28 +137,29 @@ public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
 
  
 
-    public static TreeNode FreeMindNodeToTreeNodeWithoutChild(FreeMindNode freeMindNode)
+    public static TreeNode FreeMindNodeToTreeNodeWithoutChild(TreeNode parent, FreeMindNode freeMindNode)
     {
         return new TreeNode()
         {
             Id = freeMindNode.Id,
             Text = freeMindNode.Text,
+            ParentNode = parent
         };
     }
 
-    public static TreeNode FreeMindNodeToTreeNode(FreeMindNode freeMindNode, Dictionary<string, FreeMindNode> AllNode)
+    public static TreeNode FreeMindNodeToTreeNode(TreeNode parent,FreeMindNode freeMindNode, Dictionary<string, FreeMindNode> AllNode)
     {
-        TreeNode treeNode = FreeMindNodeToTreeNodeWithoutChild(freeMindNode);
+        TreeNode treeNode = FreeMindNodeToTreeNodeWithoutChild(parent,freeMindNode);
 
         foreach (var link in freeMindNode.Link)
         {
             if (freeMindNode.Nodes.Any(p => p.Id == link.DestinationId))
             {
-                treeNode.LeftChildNode.Add(FreeMindNodeToTreeNode(AllNode[link.DestinationId],AllNode));
+                treeNode.LeftChildNode.Add(FreeMindNodeToTreeNode(treeNode,AllNode[link.DestinationId],AllNode));
             }            
             else
             {
-                treeNode.RightChildNode.Add(FreeMindNodeToTreeNode(AllNode[link.DestinationId], AllNode));
+                treeNode.RightChildNode.Add(FreeMindNodeToTreeNode(treeNode,AllNode[link.DestinationId], AllNode));
             }
         }
         return treeNode;

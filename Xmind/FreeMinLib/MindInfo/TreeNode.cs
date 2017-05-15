@@ -11,6 +11,9 @@ namespace FreeMinLib.MindInfo
     public class TreeNode:NodeBase
     {
         public string Text { get; set; }
+
+        public TreeNode ParentNode { get; set; }
+
         /// <summary>
         /// Visit first
         /// </summary>

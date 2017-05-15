@@ -25,15 +25,29 @@ public class TreeData : MonoBehaviour
 	 
 	}
 
-    public IEnumerator  visitListNode(List<TreeNode> treeNode)
+    public IEnumerator visitListNode(List<TreeNode> treeNode)
     {
         yield return null;
         foreach (var node in treeNode)
         {
             Debug.Log(node.Text);
         }
-       
-        
+
+        GameObject returnBtn = Instantiate(button);
+        returnBtn.transform.SetParent(buttonGroup.transform);
+        returnBtn.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (treeNode.First().ParentNode != null && treeNode.First().ParentNode.ParentNode != null)
+            {
+                TreeNode indexNode = treeNode.First().ParentNode.ParentNode;
+                StartCoroutine(visitOneNode(indexNode));
+            }
+            else
+            {
+                Debug.Log("开始");
+            }
+           
+        });
         for (int i = 0; i < treeNode.Count; i++)
         {
             GameObject go = Instantiate(button);
