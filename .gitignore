@@ -3,6 +3,7 @@ Library/
 bin/
 obj/
 packages/
+*.xmind
 
 #Ignore thumbnails created by Windows
 Thumbs.db

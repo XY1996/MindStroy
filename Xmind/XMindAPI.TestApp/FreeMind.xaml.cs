@@ -13,6 +13,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FreeMinLib.Reader;
+using FreeMinLib.MindInfo;
 
 namespace XMindAPI.TestApp
 {
@@ -22,10 +24,8 @@ namespace XMindAPI.TestApp
     public partial class FreeMind : Window
     {
 
-        private FreeMindeReader reader;
-        private List<FreeMindNode> data;
-        private Dictionary<string, FreeMindNode> dic;
-
+        private ITreeNodeGenerate reader;
+        private TreeNode data;
 
         public FreeMind()
         {
@@ -53,12 +53,25 @@ namespace XMindAPI.TestApp
         {
             if (reader != null)
             {
-                data = reader.SelectNodes();
-                dic = reader.Dic;
+                data = reader.GenerateTreeNode();
             }
-            Queue<string> commands = reader.CommandQueue();
-            while (commands.Any())
-                Debug.WriteLine(commands.Dequeue());
+            Stack<TreeNode> result = new Stack<TreeNode>();
+            result.Push(data);
+            while (result.Any())
+            {
+                TreeNode node=result.Pop();
+                Debug.WriteLine(node.Text);
+                foreach (var rightNode in node.RightChildNode)
+                {
+                    result.Push(rightNode);
+                }
+                foreach (var leftNode in node.LeftChildNode)
+                {
+                    result.Push(leftNode);
+                }
+              
+
+            }
             //string json = JsonConvert.SerializeObject(data);
             //data= JsonConvert.DeserializeObject<List<FreeMindNode>>(json);
         }

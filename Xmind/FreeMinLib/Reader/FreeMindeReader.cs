@@ -1,75 +1,87 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml;
+using FreeMinLib.MindInfo;
+using FreeMinLib.Reader;
 
-public class FreeMindeReader : XmlReaderBase
+public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
 {
-    private Dictionary<string, FreeMindNode> id2Node = new Dictionary<string, FreeMindNode>();
-
-    public Dictionary<string, FreeMindNode> Dic
-    {
-        get { return id2Node; }
-    }
-
-
+ 
     public FreeMindeReader(string path) : base(path)
     {
 
     }
 
-   
     /// <summary>
     /// 获得Command队列
     /// </summary>
     /// <returns></returns>
-    public Queue<string> CommandQueue()
+    public Queue<string> CommandQueue(FreeMindNode node)
     {
         Queue<string> result = new Queue<string>();
-       
-        List<FreeMindNode> data = SelectNodes();
-        //只有一个入口！！
-        Debug.Assert(data.Count==1);
-        //用栈来访问SelectNodes后得到的节点数据，类似先序遍历
+
+        //找到所有的CommandNode
+        List<FreeMindNode> commandsNode = node.Nodes;
         Stack<FreeMindNode> accessStack = new Stack<FreeMindNode>();
-        //作为开始和结束
-        accessStack.Push(data[0]);
-        FreeMindNode accessNode;
-
-        while (accessStack.Count != 0)
+        result.Enqueue(node.Text);
+        accessStack.Push(node);
+        while (accessStack.Any())
         {
-            accessNode = accessStack.Pop();
-            //字典中去除已访问的节点，防止重复访问
-            id2Node.Remove(accessNode.Id);
-            result.Enqueue(accessNode.Text);
-            //先把不属于自己的Link节点push进栈
-            foreach (var link in accessNode.Link)
-            {
-                if (accessNode.Nodes.Find(p => p.Id == link.DestinationId) == null
-                    && Dic.ContainsKey(link.DestinationId))
-                    accessStack.Push(Dic[link.DestinationId]);
+            
+            List<FreeMindArrowLink> selfLink = accessStack.Pop().Link
+                .Where(p => commandsNode.Any(o => p.DestinationId == o.Id))
+                .ToList();
+            if (!selfLink.Any())
+            {             
+                continue;
             }
-            //再把属于自己的Link节点push进栈
-            foreach (var link in accessNode.Link)
+            else if (selfLink.Count == 1)
             {
-                if (accessNode.Nodes.Find(p => p.Id == link.DestinationId) != null
-                    && Dic.ContainsKey(link.DestinationId))
-                    accessStack.Push(Dic[link.DestinationId]);
+                FreeMindNode templeFreeMindNode = commandsNode.First(p => p.Id == selfLink.First().DestinationId);
+                result.Enqueue(templeFreeMindNode.Text);
+                accessStack.Push(templeFreeMindNode);
             }
+            else
+            {
+                foreach (var tempArrowLink in selfLink)
+                {
+                    FreeMindNode templeFreeMindNode = commandsNode.First(p => p.Id == tempArrowLink.DestinationId);
+                    result.Enqueue(templeFreeMindNode.Text);
+                    accessStack.Push(templeFreeMindNode);
+                }
+            }
+
         }
-
-
-
         return result;
+    }
+    public TreeNode GenerateTreeNode()
+    {
+        TreeNode result = new TreeNode()
+        {
+            Id = new Guid().ToString(),
+            Text = "开始",
+        };
+        Dictionary<string, FreeMindNode> allFreeMindNodes;
+        List<FreeMindNode> dataList = SelectNodes(out allFreeMindNodes);
+
+        foreach (var freeMindNode in dataList)
+        {
+            result.LeftChildNode.Add(FreeMindNodeToTreeNode(freeMindNode, allFreeMindNodes));
+        }
+        return result;
+
     }
 
     /// <summary>
     /// 读取所有的XML节点，形成节点树
     /// </summary>
     /// <returns></returns>
-    public List<FreeMindNode> SelectNodes()
+    private List<FreeMindNode> SelectNodes(out Dictionary<string, FreeMindNode> id2Node)
     {
-        id2Node.Clear();
+        id2Node=new Dictionary<string, FreeMindNode>();
 
         List<FreeMindNode> nodes = new List<FreeMindNode>();
         XmlNode mapNodeList = XmlDocument.SelectSingleNode("map");
@@ -77,10 +89,10 @@ public class FreeMindeReader : XmlReaderBase
 
         foreach (XmlNode node in firstNodes)
         {
-            FreeMindNode listNode = XmlNode2FreeMindNode(node);
+            FreeMindNode listNode = XmlNode2FreeMindNode(node, id2Node);
             nodes.Add(listNode);
-            if (!Dic.ContainsKey(listNode.Id))
-                Dic.Add(listNode.Id, listNode);
+            if (!id2Node.ContainsKey(listNode.Id))
+                id2Node.Add(listNode.Id, listNode);
         }
         return nodes;
         //return nodes;
@@ -90,7 +102,7 @@ public class FreeMindeReader : XmlReaderBase
     /// </summary>
     /// <param name="node"></param>
     /// <returns></returns>
-    private FreeMindNode XmlNode2FreeMindNode(XmlNode node)
+    private FreeMindNode XmlNode2FreeMindNode(XmlNode node, Dictionary<string, FreeMindNode> id2Node)
     {
         FreeMindNode tempNode = new FreeMindNode();
         tempNode.Id = node.Attributes["ID"].Value;
@@ -110,10 +122,10 @@ public class FreeMindeReader : XmlReaderBase
         {
             foreach(XmlNode secondNode in Nodes)
             {
-                FreeMindNode listNode = XmlNode2FreeMindNode(secondNode);
+                FreeMindNode listNode = XmlNode2FreeMindNode(secondNode, id2Node);
                 tempNode.Nodes.Add(listNode);
-                if (!Dic.ContainsKey(listNode.Id))
-                    Dic.Add(listNode.Id, listNode);
+                if (!id2Node.ContainsKey(listNode.Id))
+                    id2Node.Add(listNode.Id, listNode);
                 //tempNode.Nodes.Add(XmlNode2FreeMindNode(secondNode));
             }
         }
@@ -121,4 +133,32 @@ public class FreeMindeReader : XmlReaderBase
 
     }
 
+ 
+
+    public static TreeNode FreeMindNodeToTreeNodeWithoutChild(FreeMindNode freeMindNode)
+    {
+        return new TreeNode()
+        {
+            Id = freeMindNode.Id,
+            Text = freeMindNode.Text,
+        };
+    }
+
+    public static TreeNode FreeMindNodeToTreeNode(FreeMindNode freeMindNode, Dictionary<string, FreeMindNode> AllNode)
+    {
+        TreeNode treeNode = FreeMindNodeToTreeNodeWithoutChild(freeMindNode);
+
+        foreach (var link in freeMindNode.Link)
+        {
+            if (freeMindNode.Nodes.Any(p => p.Id == link.DestinationId))
+            {
+                treeNode.LeftChildNode.Add(FreeMindNodeToTreeNode(AllNode[link.DestinationId],AllNode));
+            }            
+            else
+            {
+                treeNode.RightChildNode.Add(FreeMindNodeToTreeNode(AllNode[link.DestinationId], AllNode));
+            }
+        }
+        return treeNode;
+    }
 }

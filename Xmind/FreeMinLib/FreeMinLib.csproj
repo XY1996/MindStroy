@@ -48,9 +48,11 @@
     <Compile Include="MindInfo\FreeMindArrowLink.cs" />
     <Compile Include="MindInfo\FreeMindNode.cs" />
     <Compile Include="MindInfo\NodeBase.cs" />
+    <Compile Include="MindInfo\TreeNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader\FreeMindeReader.cs" />
     <Compile Include="Reader\IMindReadable.cs" />
+    <Compile Include="Reader\ITreeNodeGenerate.cs" />
     <Compile Include="Reader\ReaderBase.cs" />
     <Compile Include="Reader\XmlReaderBase.cs" />
   </ItemGroup>

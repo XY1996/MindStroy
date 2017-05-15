@@ -96,6 +96,7 @@ Property | Type | Description
 Is Start Point | System.Boolean | Marks this Save Point as the starting point for Flowchart execution in the scene. Each scene in your game should have exactly one Save Point with this enabled.
 Key Mode | Fungus.SavePoint+KeyMode | How the Save Point Key for this Save Point is defined.
 Custom Key | System.String | A string key which uniquely identifies this save point.
+Key Separator | System.String | A string to seperate the block name and custom key when using KeyMode.Both.
 Description Mode | Fungus.SavePoint+DescriptionMode | How the description for this Save Point is defined.
 Custom Description | System.String | A short description of this save point.
 Fire Event | System.Boolean | Fire a Save Point Loaded event when this command executes.
