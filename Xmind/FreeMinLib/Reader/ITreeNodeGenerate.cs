@@ -8,6 +8,6 @@ namespace FreeMinLib.Reader
 {
     public interface ITreeNodeGenerate
     {
-        TreeNode GenerateTreeNode();
+        TreeNode GenerateTreeNode(out Dictionary<string, string> allTreeData);
     }
 }

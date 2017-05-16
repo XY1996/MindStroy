@@ -8,4 +8,9 @@ public abstract class ReaderBase  {
     {
 
     }
+
+    protected ReaderBase()
+    {
+        
+    }
 }

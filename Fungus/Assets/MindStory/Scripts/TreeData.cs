@@ -1,23 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml;
 using FreeMinLib.MindInfo;
+using MindStory;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class TreeData : MonoBehaviour
 {
     public GameObject buttonGroup;
 
     public GameObject button;
-
+   
 
     Stack<List<TreeNode>> RightTreeNode=new Stack<List<TreeNode>>();
     // Use this for initialization
     void Start ()
     {
-        FreeMindeReader reader=new FreeMindeReader(Application.dataPath+ "\\隐形玩家.xml");
-        StartCoroutine(visitOneNode(reader.GenerateTreeNode()));
+        string Xmlpath = "Assets\\Resources\\Story\\隐形玩家.asset";
+        XmlData xmlData =AssetDatabase.LoadAssetAtPath(Xmlpath, typeof(XmlData)) as XmlData;
+        Debug.Log(xmlData.fileName);
+        MemoryStream ms = new MemoryStream(xmlData.Content);
+        XmlDocument dataDocument=new XmlDocument();
+        dataDocument.Load(ms);
+        FreeMindeReader reader=new FreeMindeReader(dataDocument);
+
+        Dictionary<string, string> allData;
+        StartCoroutine(visitOneNode(reader.GenerateTreeNode(out allData)));
     }
 	
 	// Update is called once per frame

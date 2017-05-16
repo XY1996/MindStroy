@@ -17,7 +17,12 @@ public abstract class XmlReaderBase: ReaderBase
         m_sourcePath = path;
         m_sourceXml = new XmlDocument();
         m_sourceXml.Load(m_sourcePath);
-    } 
+    }
+
+    protected XmlReaderBase(XmlDocument document)
+    {
+        m_sourceXml = document;
+    }
 
     protected XmlDocument XmlDocument
     {

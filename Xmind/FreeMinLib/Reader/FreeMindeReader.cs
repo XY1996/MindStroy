@@ -15,6 +15,11 @@ public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
 
     }
 
+    public FreeMindeReader(XmlDocument document) : base(document)
+    {
+        
+    }
+
     /// <summary>
     /// 获得Command队列
     /// </summary>
@@ -57,8 +62,9 @@ public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
         }
         return result;
     }
-    public TreeNode GenerateTreeNode()
+    public TreeNode GenerateTreeNode(out Dictionary<string, string> allTreeData)
     {
+        allTreeData=new Dictionary<string, string>();
         TreeNode result = new TreeNode()
         {
             Id = new Guid().ToString(),
@@ -68,6 +74,10 @@ public class FreeMindeReader : XmlReaderBase, ITreeNodeGenerate
 
         Dictionary<string, FreeMindNode> allFreeMindNodes;
         List<FreeMindNode> dataList = SelectNodes(out allFreeMindNodes);
+        foreach (var keyFreeMindPair in allFreeMindNodes)
+        {
+            allTreeData.Add(keyFreeMindPair.Key, keyFreeMindPair.Value.Text);
+        }
 
         foreach (var freeMindNode in dataList)
         {

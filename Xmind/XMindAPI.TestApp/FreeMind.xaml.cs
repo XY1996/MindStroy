@@ -51,9 +51,10 @@ namespace XMindAPI.TestApp
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            Dictionary<string, string> allData;
             if (reader != null)
             {
-                data = reader.GenerateTreeNode();
+                data = reader.GenerateTreeNode(out allData);
             }
             Stack<TreeNode> result = new Stack<TreeNode>();
             result.Push(data);
