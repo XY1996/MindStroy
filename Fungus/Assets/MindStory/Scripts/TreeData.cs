@@ -21,14 +21,13 @@ public class TreeData : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        string Xmlpath = "Assets\\Resources\\Story\\隐形玩家.asset";
-        XmlData xmlData =AssetDatabase.LoadAssetAtPath(Xmlpath, typeof(XmlData)) as XmlData;
-        Debug.Log(xmlData.fileName);
+        string Xmlpath = "Story\\隐形玩家";
+        XmlData xmlData = Resources.Load(Xmlpath, typeof(XmlData)) as XmlData;
+        Debug.Log(xmlData.Content.Length);
         MemoryStream ms = new MemoryStream(xmlData.Content);
         XmlDocument dataDocument=new XmlDocument();
         dataDocument.Load(ms);
         FreeMindeReader reader=new FreeMindeReader(dataDocument);
-
         Dictionary<string, string> allData;
         StartCoroutine(visitOneNode(reader.GenerateTreeNode(out allData)));
     }
